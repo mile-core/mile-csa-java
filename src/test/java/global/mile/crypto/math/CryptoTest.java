@@ -1,6 +1,6 @@
 package global.mile.crypto.math;
 
-import global.mile.TestCase;
+import global.mile.MileTestCase;
 import global.mile.crypto.KeyPair;
 import global.mile.crypto.Seed;
 import global.mile.crypto.Signature;
@@ -16,7 +16,7 @@ import static global.mile.crypto.math.Crypto.*;
  * Unit test for simple App.
  */
 public class CryptoTest
-    extends TestCase
+    extends MileTestCase
 {
     private String[][] keys;
     private String[][] signs;

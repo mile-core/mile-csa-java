@@ -1,12 +1,12 @@
 package global.mile;
 
-public abstract class TestCase extends junit.framework.TestCase {
+public abstract class MileTestCase extends junit.framework.TestCase {
 
-    public TestCase() {
+    public MileTestCase() {
         super();
     }
 
-    public TestCase(String name) {
+    public MileTestCase(String name) {
         super(name);
     }
 

@@ -1,11 +1,11 @@
 package global.mile.crypto;
 
 
-import global.mile.TestCase;
+import global.mile.MileTestCase;
 
 import static global.mile.crypto.math.Crypto.createKeyPair;
 
-public class PublicKeyTest extends TestCase {
+public class PublicKeyTest extends MileTestCase {
 
     public void testFromBase58WithCheckSum() {
         KeyPair p = createKeyPair();

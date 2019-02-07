@@ -4,6 +4,7 @@ import global.mile.Dict;
 import global.mile.crypto.PublicKey;
 import global.mile.errors.ApiCallException;
 import global.mile.errors.WebWalletCallException;
+import global.mile.wallet.Asset;
 import global.mile.wallet.Wallet;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
@@ -48,9 +49,11 @@ public class Transfer extends TransactionWithFee {
     @Override
     protected void doBuild(Dict data, SHA3.DigestSHA3 digest) {
 
+        String amountStr = Asset.normalizePrecision(amount, assetCode).toString();
+
         data.put("from", wallet.getPublicKey());
         data.put("to", destination);
-        data.put("asset", Map.of("code", assetCode, "amount", amount.toString()));
+        data.put("asset", Map.of("code", assetCode, "amount", amountStr));
         data.put("description", description);
 
         data.put("fee", fee.toString());
@@ -60,7 +63,7 @@ public class Transfer extends TransactionWithFee {
         digest.update(Digest.prepareAssetCode(assetCode));
         digest.update(wallet.getPublicKeyBytes());
         digest.update(PublicKey.fromBase58WithCheckSum(destination).getData());
-        digest.update(amount.toString().getBytes());
+        digest.update(amountStr.getBytes());
         digest.update(description.getBytes());
 
     }

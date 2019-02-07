@@ -1,12 +1,11 @@
 package global.mile.rpc;
 
-import global.mile.TestCase;
+import global.mile.MileTestCase;
 import global.mile.errors.WebWalletCallException;
 
-public class RpcTest extends TestCase {
+public class RpcTest extends MileTestCase {
 
     public void testGetUrl() {
-        //Rpc r = new Rpc("", new Rpc.PayloadParams());
         try {
             for (int i=0; i<10; i++) {
                 System.out.println(Rpc.getUrl());

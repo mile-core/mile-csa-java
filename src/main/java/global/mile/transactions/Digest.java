@@ -23,6 +23,12 @@ public class Digest {
         return reverse(assetCodeBytes.array());
     }
 
+    public static byte[] prepareFixedString(String str, int size) {
+        byte[] bytes = new byte[size];
+        System.arraycopy(str.getBytes(), 0, bytes, 0, Math.min(size, str.length()));
+        return bytes;
+    }
+
     protected static byte[] reverse(byte[] a) {
         byte[] res = new byte[a.length];
         System.arraycopy(a, 0, res, 0, a.length);

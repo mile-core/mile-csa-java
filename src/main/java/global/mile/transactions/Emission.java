@@ -22,8 +22,12 @@ public class Emission extends TransactionWithFee {
         this.assetCode = assetCode;
     }
 
-    public Emission(Wallet wallet, int assetCode, @Nullable BigDecimal fee) throws WebWalletCallException, ApiCallException {
+    public Emission(Wallet wallet, int assetCode, BigDecimal fee) throws WebWalletCallException, ApiCallException {
         this(wallet, assetCode, fee, null, null);
+    }
+
+    public Emission(Wallet wallet, int assetCode) throws WebWalletCallException, ApiCallException {
+        this(wallet, assetCode, null);
     }
 
     @Override
