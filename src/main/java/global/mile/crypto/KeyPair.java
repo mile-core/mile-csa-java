@@ -1,5 +1,7 @@
 package global.mile.crypto;
 
+import global.mile.crypto.math.Crypto;
+
 public class KeyPair {
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -15,6 +17,10 @@ public class KeyPair {
 
     public PublicKey getPublicKey() {
         return publicKey;
+    }
+
+    public Signature sign(byte[] message) {
+        return Crypto.sign(message, publicKey, privateKey);
     }
 
 

@@ -4,30 +4,29 @@ import global.mile.Chain;
 import global.mile.Dict;
 import global.mile.crypto.KeyPair;
 import global.mile.crypto.PrivateKey;
-import global.mile.crypto.PublicKey;
 import global.mile.crypto.Signature;
-import global.mile.crypto.math.Crypto;
 import global.mile.errors.ApiCallException;
 import global.mile.errors.WebWalletCallException;
 import global.mile.rpc.GetInfo;
+import global.mile.transactions.Emission;
 import global.mile.transactions.Transfer;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static global.mile.crypto.math.Crypto.createKeyPair;
 import static global.mile.crypto.math.Crypto.restoreKeyPairFromPrivateKey;
 
 public class Wallet {
-    private PublicKey publicKey;
-    private PrivateKey privateKey;
+    private KeyPair keyPair;
 
     private Chain chain;
 
     public Wallet(KeyPair pair) {
-        publicKey = pair.getPublicKey();
-        privateKey = pair.getPrivateKey();
+        keyPair = pair;
     }
 
     public Wallet() {
@@ -43,19 +42,15 @@ public class Wallet {
     }
 
     public String getPublicKey() {
-        return publicKey.toBase58WithChecksum();
+        return keyPair.getPublicKey().toBase58WithChecksum();
     }
 
     public String getPrivateKey() {
-        return privateKey.toBase58WithChecksum();
+        return keyPair.getPrivateKey().toBase58WithChecksum();
     }
 
     public byte[] getPublicKeyBytes() {
-        return publicKey.getData();
-    }
-
-    public byte[] getPrivateKeyBytes() {
-        return privateKey.getData();
+        return keyPair.getPublicKey().getData();
     }
 
     public Chain getChain() throws WebWalletCallException, ApiCallException {
@@ -67,7 +62,7 @@ public class Wallet {
     }
 
     public Signature sign(byte[] message) {
-        return Crypto.sign(message, publicKey, privateKey);
+        return keyPair.sign(message);
     }
 
     public State getState() throws WebWalletCallException, ApiCallException {
@@ -103,6 +98,8 @@ public class Wallet {
         return new State(new BigInteger(data.get("preferred-transaction-id").toString()), balances);
     }
 
+    ////////////////////////////////
+
     public boolean transfer(String destination, int assetCode, BigDecimal amount, String description, BigDecimal fee)
             throws WebWalletCallException, ApiCallException {
         Transfer tx = new Transfer(this, assetCode, amount, destination, description, fee);
@@ -122,6 +119,17 @@ public class Wallet {
     public boolean transfer(Wallet destination, int assetCode, BigDecimal amount)
             throws WebWalletCallException, ApiCallException {
         return transfer(destination.getPublicKey(), assetCode, amount);
+    }
+
+    ////////////////////////////////
+
+    public boolean emission(int assetCode, BigDecimal fee) throws WebWalletCallException, ApiCallException {
+        Emission tx = new Emission(this, assetCode, fee);
+        return tx.send();
+    }
+
+    public boolean emission(int assetCode) throws WebWalletCallException, ApiCallException {
+        return emission(assetCode, new BigDecimal("0"));
     }
 
     ////////////////////////////////
