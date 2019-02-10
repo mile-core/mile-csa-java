@@ -1,16 +1,14 @@
 package global.mile.transactions;
 
 import global.mile.Dict;
+import global.mile.Wallet;
 import global.mile.crypto.PublicKey;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 import global.mile.wallet.Asset;
-import global.mile.wallet.Wallet;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 
 public class Transfer extends TransactionWithFee {
@@ -21,22 +19,15 @@ public class Transfer extends TransactionWithFee {
     private final String description;
 
     public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination, String description,
-                    @Nullable BigDecimal fee, @Nullable BigInteger id, @Nullable BigInteger blockId)
-            throws WebWalletCallException, ApiCallException {
-        super(wallet, fee, id, blockId);
+                    @Nullable BigDecimal fee) throws ApiCallException {
+        super(wallet, fee);
         this.assetCode = assetCode;
         this.amount = amount;
         this.destination = destination;
         this.description = description;
     }
 
-    public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination, String description,
-                    @Nullable BigDecimal fee) throws WebWalletCallException, ApiCallException {
-        this(wallet, assetCode, amount, destination, description, fee, null, null);
-    }
-
-    public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination)
-            throws WebWalletCallException, ApiCallException {
+    public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination) throws ApiCallException {
         this(wallet, assetCode, amount, destination, "", null);
     }
 

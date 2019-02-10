@@ -1,11 +1,9 @@
 package global.mile;
 
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 import global.mile.transactions.PostTokenRate;
 import global.mile.transactions.RegisterNode;
 import global.mile.transactions.UnregisterNode;
-import global.mile.wallet.Wallet;
 
 import java.math.BigDecimal;
 
@@ -18,30 +16,30 @@ public class Node {
         this.address = address;
     }
 
-    public boolean register(BigDecimal amount, BigDecimal fee) throws WebWalletCallException, ApiCallException {
+    public boolean register(Chain chain, BigDecimal amount, BigDecimal fee) throws ApiCallException {
         RegisterNode tx = new RegisterNode(this.wallet, address, amount, fee);
-        return tx.send();
+        return tx.send(chain);
     }
 
-    public boolean register(BigDecimal amount) throws WebWalletCallException, ApiCallException {
-        return register(amount, new BigDecimal("0"));
+    public boolean register(Chain chain, BigDecimal amount) throws ApiCallException {
+        return register(chain, amount, new BigDecimal("0"));
     }
 
-    public boolean unregister(BigDecimal fee) throws WebWalletCallException, ApiCallException {
+    public boolean unregister(Chain chain, BigDecimal fee) throws ApiCallException {
         UnregisterNode tx = new UnregisterNode(this.wallet, fee);
-        return tx.send();
+        return tx.send(chain);
     }
 
-    public boolean unregister() throws WebWalletCallException, ApiCallException {
-        return unregister(new BigDecimal("0"));
+    public boolean unregister(Chain chain) throws ApiCallException {
+        return unregister(chain, new BigDecimal("0"));
     }
 
-    public boolean postTokenRate(BigDecimal rate, BigDecimal fee) throws WebWalletCallException, ApiCallException {
+    public boolean postTokenRate(Chain chain, BigDecimal rate, BigDecimal fee) throws ApiCallException {
         PostTokenRate tx = new PostTokenRate(this.wallet, rate, fee);
-        return tx.send();
+        return tx.send(chain);
     }
 
-    public boolean postTokenRate(BigDecimal rate) throws WebWalletCallException, ApiCallException {
-        return postTokenRate(rate, new BigDecimal("0"));
+    public boolean postTokenRate(Chain chain, BigDecimal rate) throws ApiCallException {
+        return postTokenRate(chain, rate, new BigDecimal("0"));
     }
 }

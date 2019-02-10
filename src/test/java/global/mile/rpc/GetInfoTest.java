@@ -7,7 +7,9 @@ import global.mile.errors.MileException;
 public class GetInfoTest extends MileTestCase {
 
     public void testExec() {
-        GetInfo i = new GetInfo("get-blockchain-state", new Dict());
+        RpcFactory rpcFactory = new RpcFactory(config);
+
+        GetInfo i = rpcFactory.createGetInfo("get-blockchain-state");
         try {
             System.out.println(i.exec());
         } catch (MileException e) {

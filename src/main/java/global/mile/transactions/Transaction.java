@@ -2,53 +2,34 @@ package global.mile.transactions;
 
 import global.mile.Chain;
 import global.mile.Dict;
+import global.mile.Wallet;
 import global.mile.crypto.Bytes;
 import global.mile.crypto.Signature;
-import global.mile.crypto.math.Crypto;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
-import global.mile.rpc.SendTransaction;
-import global.mile.wallet.Wallet;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 
 abstract public class Transaction {
 
     protected Wallet wallet;
-    protected BigInteger id;
-    protected BigInteger blockId;
 
-
-    public Transaction(Wallet wallet, @Nullable BigInteger id, @Nullable BigInteger blockId)
-            throws WebWalletCallException, ApiCallException {
+    public Transaction(Wallet wallet) throws ApiCallException {
         this.wallet = wallet;
-
-        if (id == null) {
-            this.id = wallet.getState().getPreferredTransactionId();
-        } else {
-            this.id = id;
-        }
-
-        if (blockId == null) {
-            this.blockId = Chain.getCurrentBlockId();
-        } else {
-            this.blockId = blockId;
-        }
-
     }
 
-    public boolean send() throws WebWalletCallException, ApiCallException {
-        Dict data = this.build();
-        SendTransaction t = new SendTransaction(data);
-        return t.exec();
+    public boolean send(Chain chain) throws ApiCallException {
+        return chain.sendTransaction(this);
+    }
+
+    public Wallet getWallet() {
+        return wallet;
     }
 
     abstract public String getName();
 
-    public final Dict build() {
+    public final Dict build(@Nonnull BigInteger id, @Nonnull BigInteger blockId) {
         Dict data = new Dict();
         data.put("transaction-type", getName());
 

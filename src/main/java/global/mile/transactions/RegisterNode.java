@@ -1,15 +1,13 @@
 package global.mile.transactions;
 
 import global.mile.Dict;
+import global.mile.Wallet;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 import global.mile.wallet.Asset;
-import global.mile.wallet.Wallet;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 
 public class RegisterNode extends TransactionWithFee {
@@ -17,10 +15,9 @@ public class RegisterNode extends TransactionWithFee {
     private final String address;
     private final BigDecimal amount;
 
-    public RegisterNode(Wallet wallet, String address, BigDecimal amount,
-                        @Nullable BigDecimal fee, @Nullable BigInteger id, @Nullable BigInteger blockId)
-            throws WebWalletCallException, ApiCallException {
-        super(wallet, fee, id, blockId);
+    public RegisterNode(Wallet wallet, String address, BigDecimal amount, @Nullable BigDecimal fee)
+            throws ApiCallException {
+        super(wallet, fee);
 
         if (address.length() == 0) {
             throw new ApiCallException("Address length must not be empty");
@@ -32,12 +29,7 @@ public class RegisterNode extends TransactionWithFee {
         this.amount = amount;
     }
 
-    public RegisterNode(Wallet wallet, String address, BigDecimal amount,
-                        @Nullable BigDecimal fee) throws WebWalletCallException, ApiCallException {
-        this(wallet, address, amount, fee, null, null);
-    }
-
-    public RegisterNode(Wallet wallet, String address, BigDecimal amount) throws WebWalletCallException, ApiCallException {
+    public RegisterNode(Wallet wallet, String address, BigDecimal amount) throws ApiCallException {
         this(wallet, address, amount, null);
     }
 

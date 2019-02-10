@@ -2,18 +2,17 @@ package global.mile.rpc;
 
 import global.mile.Dict;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 
 public class SendTransaction extends Rpc {
-    public SendTransaction(Dict params) {
-        super("send-transaction", params);
+    public SendTransaction(Dict params, String apiVersion, UrlBalancer urlBalancer) {
+        super("send-transaction", params, apiVersion, urlBalancer);
     }
 
-    public boolean exec() throws ApiCallException, WebWalletCallException {
+    public boolean exec() throws ApiCallException {
 
-        Dict response = doExec();
+        Dict response = execInternal();
         Object result = response.get("result");
-        if (result==null || !(result instanceof java.lang.String)) {
+        if (!(result instanceof String)) {
             throw new ApiCallException("Invalid response");
         }
 

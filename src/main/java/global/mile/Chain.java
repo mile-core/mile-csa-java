@@ -1,58 +1,35 @@
 package global.mile;
 
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 import global.mile.rpc.GetInfo;
-import global.mile.transactions.Digest;
+import global.mile.rpc.RpcFactory;
+import global.mile.transactions.Transaction;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Chain {
     private String project;
     private String version;
     private List<String> supportedTransactions;
-    private List<Map<String, String>> supportedAssets;
     private Map<Integer, String> assetsNameByCode;
     private Map<String, Integer> assetsCodeByName;
+    private boolean updatedChainInfo = false;
 
-    private static Chain chain;
+    private Config config;
+    private RpcFactory rpcFactory;
 
-    public static Chain getInstance() throws WebWalletCallException, ApiCallException {
-        if (chain == null) {
-            chain = new Chain();
-            Dict data = new GetInfo("get-blockchain-info").exec();
-            chain.project = data.get("project").toString();
-            chain.version = data.get("version").toString();
+    public Chain(Config config) {
 
-            chain.supportedTransactions = new ArrayList<>();
-            Object supportedTransactions = data.get("supported-transaction-types");
-            if (!(supportedTransactions instanceof List)) {
-                throw new ApiCallException("Invalid supported-transaction-types");
-            }
-            for (Object item: (List) supportedTransactions) {
-                chain.supportedTransactions.add(item.toString());
-            }
-
-            chain.supportedAssets = new ArrayList<Map<String, String>>();
-            chain.assetsNameByCode = new HashMap<Integer, String>();
-            chain.assetsCodeByName = new HashMap<String, Integer>();
-            Object supportedAssets = data.get("supported-assets");
-            if (!(supportedAssets instanceof List)) {
-                throw new ApiCallException("Invalid supported-assets");
-            }
-            for (Map<String, String> item: (List<Map<String, String>>) supportedAssets) {
-                chain.supportedAssets.add(item);
-                chain.assetsNameByCode.put(Integer.parseInt(item.get("code").toString()), item.get("name").toString());
-                chain.assetsCodeByName.put(item.get("name").toString(), Integer.parseInt(item.get("code").toString()));
-            }
-        }
-
-        return chain;
+        this.config = config;
+        this.rpcFactory = new RpcFactory(config);
     }
 
-    public static BigInteger getCurrentBlockId() throws WebWalletCallException, ApiCallException {
-        GetInfo i = new GetInfo("get-current-block-id", new Dict());
+    public BigInteger getCurrentBlockId() throws ApiCallException {
+        GetInfo i = rpcFactory.createGetInfo("get-current-block-id");
         Dict data = i.exec();
         if (data.get("current-block-id") == null) {
             throw new ApiCallException("Invalid chain response");
@@ -61,11 +38,81 @@ public class Chain {
         return new BigInteger(data.get("current-block-id").toString());
     }
 
-    public String getAssetName(int assetCode) {
+    public String getProject() throws ApiCallException {
+        if (!updatedChainInfo) {
+            updateChainInfo();
+            updatedChainInfo = true;
+        }
+        return project;
+    }
+
+    public String getVersion() throws ApiCallException {
+        if (!updatedChainInfo) {
+            updateChainInfo();
+            updatedChainInfo = true;
+        }
+        return version;
+    }
+
+    public List<String> getSupportedTransactions() throws ApiCallException {
+        if (!updatedChainInfo) {
+            updateChainInfo();
+            updatedChainInfo = true;
+        }
+        return supportedTransactions;
+    }
+
+    public String getAssetName(int assetCode) throws ApiCallException {
+        if (!updatedChainInfo) {
+            updateChainInfo();
+            updatedChainInfo = true;
+        }
         return assetsNameByCode.get(assetCode);
     }
 
-    public int getAssetCode(String assetName) {
+    public int getAssetCode(String assetName) throws ApiCallException {
+        if (!updatedChainInfo) {
+            updateChainInfo();
+            updatedChainInfo = true;
+        }
         return assetsCodeByName.get(assetName);
     }
+
+
+    public void updateChainInfo() throws ApiCallException {
+        Dict data = rpcFactory.createGetInfo("get-blockchain-info").exec();
+        project = data.get("project").toString();
+        version = data.get("version").toString();
+
+        supportedTransactions = new ArrayList<>();
+        Object supportedTransactions = data.get("supported-transaction-types");
+        if (!(supportedTransactions instanceof List)) {
+            throw new ApiCallException("Invalid supported-transaction-types");
+        }
+        for (Object item: (List) supportedTransactions) {
+            this.supportedTransactions.add(item.toString());
+        }
+
+        assetsNameByCode = new HashMap<Integer, String>();
+        assetsCodeByName = new HashMap<String, Integer>();
+        Object supportedAssets = data.get("supported-assets");
+        if (!(supportedAssets instanceof List)) {
+            throw new ApiCallException("Invalid supported-assets");
+        }
+        for (Map<String, String> item: (List<Map<String, String>>) supportedAssets) {
+            assetsNameByCode.put(Integer.parseInt(item.get("code").toString()), item.get("name").toString());
+            assetsCodeByName.put(item.get("name").toString(), Integer.parseInt(item.get("code").toString()));
+        }
+    }
+
+    public Dict getInfo(String method, Dict params) throws ApiCallException {
+        return rpcFactory.createGetInfo(method, params).exec();
+    }
+
+    public boolean sendTransaction(Transaction transaction) throws ApiCallException {
+        BigInteger blockId = this.getCurrentBlockId();
+        BigInteger transactionId = transaction.getWallet().getState(this).getPreferredTransactionId();
+        return rpcFactory.createSendTransaction(transaction.build(transactionId, blockId)).exec();
+    }
+
 }

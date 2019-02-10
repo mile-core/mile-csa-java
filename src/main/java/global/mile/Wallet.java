@@ -1,15 +1,13 @@
-package global.mile.wallet;
+package global.mile;
 
-import global.mile.Chain;
-import global.mile.Dict;
 import global.mile.crypto.KeyPair;
 import global.mile.crypto.PrivateKey;
 import global.mile.crypto.Signature;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
-import global.mile.rpc.GetInfo;
 import global.mile.transactions.Emission;
 import global.mile.transactions.Transfer;
+import global.mile.wallet.Asset;
+import global.mile.wallet.Balance;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -53,23 +51,14 @@ public class Wallet {
         return keyPair.getPublicKey().getData();
     }
 
-    public Chain getChain() throws WebWalletCallException, ApiCallException {
-        if (chain == null) {
-            chain = Chain.getInstance();
-        }
-
-        return chain;
-    }
-
     public Signature sign(byte[] message) {
         return keyPair.sign(message);
     }
 
-    public State getState() throws WebWalletCallException, ApiCallException {
+    public State getState(Chain chain) throws  ApiCallException {
         Dict params = new Dict();
         params.put("public-key", this.getPublicKey());
-        GetInfo i = new GetInfo("get-wallet-state", params);
-        Dict data = i.exec();
+        Dict data = chain.getInfo("get-wallet-state", params);
 
         if (data.get("preferred-transaction-id") == null) {
             throw new ApiCallException("");
@@ -86,7 +75,7 @@ public class Wallet {
 
                 balances.add(
                         new Balance(
-                                new Asset(getChain().getAssetName(assetCode), assetCode),
+                                new Asset(chain.getAssetName(assetCode), assetCode),
                                 new BigDecimal(((Map) item).get("amount").toString())
                         )
                 );
@@ -100,36 +89,36 @@ public class Wallet {
 
     ////////////////////////////////
 
-    public boolean transfer(String destination, int assetCode, BigDecimal amount, String description, BigDecimal fee)
-            throws WebWalletCallException, ApiCallException {
+    public boolean transfer(Chain chain, String destination, int assetCode, BigDecimal amount, String description, BigDecimal fee)
+            throws ApiCallException {
         Transfer tx = new Transfer(this, assetCode, amount, destination, description, fee);
-        return tx.send();
+        return tx.send(chain);
     }
 
-    public boolean transfer(String destination, int assetCode, BigDecimal amount)
-            throws WebWalletCallException, ApiCallException {
-        return transfer(destination, assetCode, amount, "", new BigDecimal("0"));
+    public boolean transfer(Chain chain, String destination, int assetCode, BigDecimal amount)
+            throws ApiCallException {
+        return transfer(chain, destination, assetCode, amount, "", new BigDecimal("0"));
     }
 
-    public boolean transfer(Wallet destination, int assetCode, BigDecimal amount, String description, BigDecimal fee)
-            throws WebWalletCallException, ApiCallException {
-        return transfer(destination.getPublicKey(), assetCode, amount, description, fee);
+    public boolean transfer(Chain chain, Wallet destination, int assetCode, BigDecimal amount, String description, BigDecimal fee)
+            throws ApiCallException {
+        return transfer(chain, destination.getPublicKey(), assetCode, amount, description, fee);
     }
 
-    public boolean transfer(Wallet destination, int assetCode, BigDecimal amount)
-            throws WebWalletCallException, ApiCallException {
-        return transfer(destination.getPublicKey(), assetCode, amount);
+    public boolean transfer(Chain chain, Wallet destination, int assetCode, BigDecimal amount)
+            throws ApiCallException {
+        return transfer(chain, destination.getPublicKey(), assetCode, amount);
     }
 
     ////////////////////////////////
 
-    public boolean emission(int assetCode, BigDecimal fee) throws WebWalletCallException, ApiCallException {
+    public boolean emission(Chain chain, int assetCode, BigDecimal fee) throws ApiCallException {
         Emission tx = new Emission(this, assetCode, fee);
-        return tx.send();
+        return tx.send(chain);
     }
 
-    public boolean emission(int assetCode) throws WebWalletCallException, ApiCallException {
-        return emission(assetCode, new BigDecimal("0"));
+    public boolean emission(Chain chain, int assetCode) throws ApiCallException {
+        return emission(chain, assetCode, new BigDecimal("0"));
     }
 
     ////////////////////////////////

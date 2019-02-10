@@ -1,5 +1,8 @@
 package global.mile;
 
+import java.awt.*;
+import java.util.Arrays;
+
 public abstract class MileTestCase extends junit.framework.TestCase {
 
     public MileTestCase() {
@@ -10,8 +13,13 @@ public abstract class MileTestCase extends junit.framework.TestCase {
         super(name);
     }
 
+    protected Config config;
+
     protected void setUp() throws Exception {
 
-        Config.Web.url = "https://wallet.testnet.mile.global";
+        this.config = Config.custom()
+                .setUseBalancing(false)
+                .setApiUrls(Arrays.asList("https://lotus000.testnet.mile.global"))
+                .build();
     }
 }

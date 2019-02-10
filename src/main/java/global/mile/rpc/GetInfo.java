@@ -2,21 +2,16 @@ package global.mile.rpc;
 
 import global.mile.Dict;
 import global.mile.errors.ApiCallException;
-import global.mile.errors.WebWalletCallException;
 
 import java.util.Map;
 
 public class GetInfo extends Rpc {
-    public GetInfo(String method, Dict params) {
-        super(method, params);
+    public GetInfo(String method, Dict params, String apiVersion, UrlBalancer urlBalancer) {
+        super(method, params, apiVersion, urlBalancer);
     }
 
-    public GetInfo(String method) {
-        this(method, new Dict());
-    }
-
-    public Dict exec() throws ApiCallException, WebWalletCallException {
-        Dict response = doExec();
+    public Dict exec() throws ApiCallException {
+        Dict response = execInternal();
         Object result = response.get("result");
         if (result == null) {
             return null;
