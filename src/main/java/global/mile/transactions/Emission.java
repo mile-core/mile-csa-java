@@ -2,7 +2,6 @@ package global.mile.transactions;
 
 import global.mile.Dict;
 import global.mile.Wallet;
-import global.mile.errors.ApiCallException;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import javax.annotation.Nullable;
@@ -13,12 +12,12 @@ public class Emission extends TransactionWithFee {
 
     private final int assetCode;
 
-    public Emission(Wallet wallet, int assetCode, @Nullable BigDecimal fee) throws ApiCallException {
+    public Emission(Wallet wallet, int assetCode, @Nullable BigDecimal fee) {
         super(wallet, fee);
         this.assetCode = assetCode;
     }
 
-    public Emission(Wallet wallet, int assetCode) throws ApiCallException {
+    public Emission(Wallet wallet, int assetCode) {
         this(wallet, assetCode, null);
     }
 
@@ -38,5 +37,13 @@ public class Emission extends TransactionWithFee {
 
         digest.update(Digest.prepareAssetCode(assetCode));
         digest.update(wallet.getPublicKeyBytes());
+    }
+
+    @Override
+    public String toString() {
+        return getName()
+                + ": wallet: " + wallet.getPublicKey()
+                + ", asset code: " + assetCode
+                + ", fee: " + fee.toString();
     }
 }

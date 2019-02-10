@@ -2,7 +2,6 @@ package global.mile.transactions;
 
 import global.mile.Dict;
 import global.mile.Wallet;
-import global.mile.errors.ApiCallException;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import javax.annotation.Nullable;
@@ -11,11 +10,11 @@ import java.math.BigDecimal;
 public class UnregisterNode extends TransactionWithFee {
 
 
-    public UnregisterNode(Wallet wallet, @Nullable BigDecimal fee) throws ApiCallException {
+    public UnregisterNode(Wallet wallet, @Nullable BigDecimal fee) {
         super(wallet, fee);
     }
 
-    public UnregisterNode(Wallet wallet) throws ApiCallException {
+    public UnregisterNode(Wallet wallet) {
         this(wallet, null);
     }
 
@@ -33,5 +32,12 @@ public class UnregisterNode extends TransactionWithFee {
         //digest
 
         digest.update(wallet.getPublicKeyBytes());
+    }
+
+    @Override
+    public String toString() {
+        return getName()
+                + ": wallet: " + wallet.getPublicKey()
+                + ", fee: " + fee.toString();
     }
 }

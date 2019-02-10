@@ -3,7 +3,6 @@ package global.mile.transactions;
 import global.mile.Dict;
 import global.mile.Wallet;
 import global.mile.crypto.PublicKey;
-import global.mile.errors.ApiCallException;
 import global.mile.wallet.Asset;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
@@ -19,7 +18,7 @@ public class Transfer extends TransactionWithFee {
     private final String description;
 
     public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination, String description,
-                    @Nullable BigDecimal fee) throws ApiCallException {
+                    @Nullable BigDecimal fee) {
         super(wallet, fee);
         this.assetCode = assetCode;
         this.amount = amount;
@@ -27,7 +26,7 @@ public class Transfer extends TransactionWithFee {
         this.description = description;
     }
 
-    public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination) throws ApiCallException {
+    public Transfer(Wallet wallet, int assetCode, BigDecimal amount, String destination) {
         this(wallet, assetCode, amount, destination, "", null);
     }
 
@@ -57,5 +56,16 @@ public class Transfer extends TransactionWithFee {
         digest.update(amountStr.getBytes());
         digest.update(description.getBytes());
 
+    }
+
+    @Override
+    public String toString() {
+        return getName()
+                + ": wallet: " + wallet.getPublicKey()
+                + ", asset code: " + assetCode
+                + ", amount: " + amount.toString()
+                + ", destination: " + destination
+                + ", description: " + description
+                + ", fee: " + fee.toString();
     }
 }

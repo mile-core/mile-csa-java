@@ -15,7 +15,7 @@ abstract public class Transaction {
 
     protected Wallet wallet;
 
-    public Transaction(Wallet wallet) throws ApiCallException {
+    public Transaction(Wallet wallet) {
         this.wallet = wallet;
     }
 
@@ -56,4 +56,6 @@ abstract public class Transaction {
     }
 
     abstract protected void doBuild(Dict data, SHA3.DigestSHA3 digest);
+
+    abstract public String toString();
 }

@@ -72,3 +72,19 @@ Instructions for `gradle`, `maven` https://jitpack.io/#mile-core/mile-csa-java/
 ```
     wallet.emission(chain, Asset.MILE); // Stake all Miles and do XDR emission
 ```
+
+## Explore blocks
+
+```
+    BigInteger lastBlock = chain.getCurrentBlockId();
+
+    for (BigInteger i = lastBlock.subtract(new BigInteger("15")); i.compareTo(lastBlock) < 0; i = i.add(new BigInteger("1"))) {
+        Block block = chain.getBlock(i);
+
+        System.out.println(block.getId() + " :: " + block.getTimestamp());
+        for (Transaction t : block.getTransactions()) {
+            System.out.println(t);
+        }
+
+    }
+```

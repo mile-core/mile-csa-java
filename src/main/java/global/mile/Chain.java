@@ -4,6 +4,7 @@ import global.mile.errors.ApiCallException;
 import global.mile.rpc.GetInfo;
 import global.mile.rpc.RpcFactory;
 import global.mile.transactions.Transaction;
+import global.mile.transactions.TransactionParser;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -103,6 +104,18 @@ public class Chain {
             assetsNameByCode.put(Integer.parseInt(item.get("code").toString()), item.get("name").toString());
             assetsCodeByName.put(item.get("name").toString(), Integer.parseInt(item.get("code").toString()));
         }
+    }
+
+    public Block getBlock(BigInteger id) throws ApiCallException {
+        Dict blockInfo = getInfo("get-block-by-id", Dict.from("id", id.toString()));
+        Dict blockData = (Dict) blockInfo.get("block-data");
+
+        return new Block(
+                new BigInteger(blockData.get("id").toString()),
+                blockData,
+                blockData.get("timestamp").toString(),
+                TransactionParser.parse(blockData.get("transactions"))
+        );
     }
 
     public Dict getInfo(String method, Dict params) throws ApiCallException {

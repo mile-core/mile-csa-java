@@ -2,7 +2,6 @@ package global.mile.transactions;
 
 import global.mile.Dict;
 import global.mile.Wallet;
-import global.mile.errors.ApiCallException;
 import global.mile.wallet.Asset;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
@@ -14,13 +13,13 @@ public class PostTokenRate extends TransactionWithFee {
 
     private final BigDecimal rate;
 
-    public PostTokenRate(Wallet wallet, BigDecimal rate, @Nullable BigDecimal fee) throws ApiCallException {
+    public PostTokenRate(Wallet wallet, BigDecimal rate, @Nullable BigDecimal fee) {
         super(wallet, fee);
 
         this.rate = rate;
     }
 
-    public PostTokenRate(Wallet wallet, BigDecimal rate) throws ApiCallException {
+    public PostTokenRate(Wallet wallet, BigDecimal rate) {
         this(wallet, rate, null);
     }
 
@@ -42,6 +41,13 @@ public class PostTokenRate extends TransactionWithFee {
 
         digest.update(wallet.getPublicKeyBytes());
         digest.update(rateStr.getBytes());
+    }
 
+    @Override
+    public String toString() {
+        return getName()
+                + ": wallet: " + wallet.getPublicKey()
+                + ", rate: " + rate.toString()
+                + ", fee: " + fee.toString();
     }
 }
