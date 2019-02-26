@@ -4,7 +4,6 @@ import global.mile.crypto.KeyPair;
 import global.mile.crypto.PrivateKey;
 import global.mile.crypto.Signature;
 import global.mile.errors.ApiCallException;
-import global.mile.transactions.Emission;
 import global.mile.transactions.Transfer;
 import global.mile.wallet.Asset;
 import global.mile.wallet.Balance;
@@ -108,17 +107,6 @@ public class Wallet {
     public boolean transfer(Chain chain, Wallet destination, int assetCode, BigDecimal amount)
             throws ApiCallException {
         return transfer(chain, destination.getPublicKey(), assetCode, amount);
-    }
-
-    ////////////////////////////////
-
-    public boolean emission(Chain chain, int assetCode, BigDecimal fee) throws ApiCallException {
-        Emission tx = new Emission(this, assetCode, fee);
-        return tx.send(chain);
-    }
-
-    public boolean emission(Chain chain, int assetCode) throws ApiCallException {
-        return emission(chain, assetCode, new BigDecimal("0"));
     }
 
     ////////////////////////////////

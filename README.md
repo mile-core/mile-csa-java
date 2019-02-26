@@ -67,12 +67,6 @@ Instructions for `gradle`, `maven` https://jitpack.io/#mile-core/mile-csa-java/
     wallet.transfer(chain, destinationAddress, assetCode, new BigDecimal("0.01"), description, fee);
 ```
 
-## Do XDR emission
-
-```
-    wallet.emission(chain, Asset.MILE); // Stake all Miles and do XDR emission
-```
-
 ## Explore blocks
 
 ```

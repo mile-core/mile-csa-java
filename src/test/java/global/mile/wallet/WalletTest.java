@@ -43,41 +43,4 @@ public class WalletTest extends MileTestCase {
             fail(e.getMessage());
         }
     }
-
-    public void testEmission() {
-
-        Chain chain = new Chain(config);
-
-        Wallet w1 = new Wallet("secret-phrase");
-        System.out.println(w1.getPublicKey() + " " + w1.getPrivateKey());
-
-        try {
-            System.out.println(w1.getState(chain).getBalances());
-        } catch (MileException e) {
-            fail(e.getMessage());
-        }
-
-        try {
-            w1.emission(chain, 0, new BigDecimal("0.00"));
-        } catch (MileException e) {
-            if (e.getMessage().contains("not present freeze mile token")) {
-                System.out.println(e.getMessage());
-            } else {
-                fail(e.getMessage());
-            }
-        }
-
-        try {
-            TimeUnit.SECONDS.sleep(42);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            System.out.println(w1.getState(chain).getBalances());
-        } catch (MileException e) {
-            fail(e.getMessage());
-        }
-    }
-
 }

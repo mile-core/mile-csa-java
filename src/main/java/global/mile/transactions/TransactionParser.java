@@ -40,16 +40,6 @@ public class TransactionParser {
                     }
                     break;
                 }
-                case "EmissionTransaction": {
-                    res.add(
-                            new Emission(
-                                    new PublicKeyWallet(((Map) transaction).get("from").toString()),
-                                    Integer.parseInt(((Map) transaction).get("code").toString()),
-                                    new BigDecimal(((Map) transaction).get("fee").toString())
-                            )
-                    );
-                    break;
-                }
                 default:
                     break;
             }
